@@ -1,20 +1,27 @@
 /**
  * Public entry point of @trysac/crdt-json.
  *
- * Replace this placeholder with the utility's real API. Keep every export documented and covered by tests.
+ * Zero-runtime-dependency conflict-free replicated JSON document with maps, RGA sequences, PN-counters,
+ * state-vector synchronization, and compact binary encoding.
  */
 
-/**
- * Builds a greeting for `name`.
- *
- * @param name - Who to greet. Surrounding whitespace is ignored.
- * @returns The greeting, for example `"Hello, Ada!"`.
- * @throws {TypeError} When `name` is empty after trimming.
- */
-export function greet(name: string): string {
-  const trimmed = name.trim();
-  if (trimmed === "") {
-    throw new TypeError("name must not be empty");
-  }
-  return `Hello, ${trimmed}!`;
-}
+export {
+  CCounter,
+  CList,
+  CMap,
+  CText,
+  DEFAULT_MAX_NESTING_DEPTH,
+  DEFAULT_MAX_PAYLOAD_BYTES,
+  Doc,
+  type DocOptions,
+  MAX_REPLICA_ID_BYTES,
+} from "./crdt.js";
+
+export {
+  CrdtDecodeError,
+  CrdtError,
+  CrdtKeyError,
+  CrdtLimitError,
+} from "./errors.js";
+
+export { type LamportId, OpType, type StateVector } from "./types.js";

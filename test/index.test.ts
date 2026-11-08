@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { greet } from "../src/index.js";
+import { Doc } from "../src/index.js";
 
-describe("greet", () => {
-  it("greets a trimmed name", () => {
-    expect(greet("  Ada ")).toBe("Hello, Ada!");
-  });
-
-  it("rejects an empty name", () => {
-    expect(() => greet("   ")).toThrow(TypeError);
+describe("Public API Exports", () => {
+  it("exports Doc and exposes public methods", () => {
+    const doc = new Doc("replica-root");
+    expect(doc.replicaId).toBe("replica-root");
+    expect(doc.getMap("map")).toBeDefined();
+    expect(doc.getText("text")).toBeDefined();
+    expect(doc.getCounter("counter")).toBeDefined();
+    expect(doc.getList("list")).toBeDefined();
   });
 });

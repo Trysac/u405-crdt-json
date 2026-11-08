@@ -1,15 +1,16 @@
 # crdt-json
 
 [![npm version](https://img.shields.io/npm/v/@trysac/crdt-json.svg)](https://www.npmjs.com/package/@trysac/crdt-json)
-[![license: MIT](https://img.shields.io/npm/l/@trysac/crdt-json.svg)](LICENSE)
-[![CI](https://github.com/Trysac/u405-crdt-json/actions/workflows/ci.yml/badge.svg)](https://github.com/Trysac/u405-crdt-json/actions/workflows/ci.yml)
 
-Conflict-free replicated JSON document with maps, RGA sequences, PN-counters, state-vector sync, and binary encoding.
+Conflict-free replicated JSON document library with maps, RGA sequences, PN-counters, and compact binary encoding.
 
 ## Problem
 
-Describe in two or three sentences the concrete problem this utility solves, who hits it, and why existing
-packages do not solve it well. Keep it factual; link to an issue or decision record when there is one.
+Collaborative web and local-first applications require synchronization of structured JSON state across untrusted or intermittent networks without a central coordinator. Ad-hoc diff-merge algorithms often result in silent data loss, non-convergent states, and interleaved character edits. This library provides deterministic convergence, compact delta synchronization, and mathematical consistency across distributed peers.
+
+## Why not Automerge or Yjs?
+
+Unlike heavier alternatives like Automerge or Yjs that introduce large WASM bundles or complex non-tree runtimes, `crdt-json` is a lightweight, zero-runtime-dependency TypeScript library. It features a minimal binary wire format and clear deterministic execution semantics tailored specifically for modern web browsers and Node.js.
 
 ## Install
 
@@ -17,39 +18,32 @@ packages do not solve it well. Keep it factual; link to an issue or decision rec
 npm install @trysac/crdt-json
 ```
 
-Requires Node.js 20 or newer. The package ships ES modules with TypeScript declarations.
-
 ## Usage
 
 ```ts
-import { greet } from "@trysac/crdt-json";
-
-// Build a greeting; surrounding whitespace is ignored.
-const message = greet("  Ada ");
-console.log(message); // "Hello, Ada!"
-
-try {
-  greet("   ");
-} catch (error) {
-  console.error((error as Error).message); // "name must not be empty"
-}
+import { Doc } from "@trysac/crdt-json";
+const docA = new Doc("replica-a");
+const docB = new Doc("replica-b");
+docA.getMap("users").set("alice", { status: "online" });
+docB.getText("notes").insert(0, "Hello CRDT!");
+docA.applyUpdate(docB.encodeUpdate());
+docB.applyUpdate(docA.encodeUpdate());
+console.log(docA.toJSON());
 ```
 
-## API
+## API Summary
 
-| Export | Signature | Description |
-|---|---|---|
-| `greet` | `(name: string) => string` | Placeholder API; replace it with the real one. |
+- **Doc**: The root container.
+  - `getMap(key)`, `getText(key)`, `getCounter(key)`, `getList(key)`: Access data structures.
+  - `encodeStateVector()`, `encodeUpdate(sinceVector?)`, `applyUpdate(bytes)`: Synchronization primitives.
+  - `toJSON()`: Snapshot.
+  - `on('change', handler)`: Event listening.
+- **Error Types**: `CrdtDecodeError`, `CrdtLimitError`, `CrdtKeyError`, and `CrdtError` (base class).
 
-## Development
+## Limits
 
-```sh
-npm install
-npm run check   # lint, format, types, tests with coverage, docs, secrets
-```
+- `maxPayloadBytes`: 16 MiB default.
+- `maxNestingDepth`: 32 levels default.
+- `replicaId`: Max 64 UTF-8 bytes.
 
-See [AGENTS.md](AGENTS.md) for the full command list and [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow.
-
-## License
-
-[MIT](LICENSE) © 2026 Miguel Gomez
+See [docs/SECURITY.md](docs/SECURITY.md) for threat model and limits.
