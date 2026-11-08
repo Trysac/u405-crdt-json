@@ -1,31 +1,15 @@
-# Security practices
+# Security
 
-How this repository keeps the package and its users safe. The disclosure policy is in
-[../SECURITY.md](../SECURITY.md).
+## Threat Model
 
-## Secrets
+### Defended
 
-- No secrets, tokens or credentials in the repository, commit history, logs or prompts.
-- `gitleaks` runs as the last step of `npm run check` and as a dedicated CI job. Its configuration is
-  `.gitleaks.toml`.
-- Publishing credentials live only in the CI secret store or the maintainer's local npm configuration.
+- **Payload Injection**: Binary updates are strictly bounds-checked. Payloads exceeding `maxPayloadBytes` (16 MiB) are rejected before memory allocation.
+- **Depth Bombs**: Recursive structure validation prevents call stack overflows during update processing (limit: 32 nesting levels).
+- **Malformed Input**: Invalid wire versions, malformed varints, invalid string table indices, or truncated payloads trigger specific error types (`CrdtDecodeError`, `CrdtLimitError`).
+- **Replica ID Spoofing**: Invalid or oversized (64+ bytes) replica IDs are rejected via `CrdtKeyError`.
 
-## Dependencies
+### Not Defended
 
-- Runtime dependencies are avoided; development dependencies are limited to the toolchain listed in
-  [STACK.md](STACK.md).
-- Dependabot opens weekly updates for npm packages and GitHub Actions.
-- Commit the generated `package-lock.json` so installs are reproducible.
-
-## Code
-
-- No `eval`, dynamic `Function` construction or shelling out from library code.
-- Inputs from callers are validated and rejected with explicit errors.
-- The `security` step of `npm run check` runs ESLint with eslint-plugin-security only (Biome stays the
-  linter). Its configuration is `scripts/eslint-security.config.mjs`; inline `eslint-disable` comments are
-  ignored, so a finding is fixed in the code, never silenced.
-
-## Publishing
-
-- Packages are published from a clean checkout after `npm run check` passes.
-- Only `dist/` is included in the published tarball.
+- **Malicious Operations**: This library does not provide BFT (Byzantine Fault Tolerance) or cryptographic signatures; any peer with access to the sync stream can inject operations into the document state.
+- **Rich Text Formatting**: Does not support cryptographically verified document editing or complex formatting permission models.
