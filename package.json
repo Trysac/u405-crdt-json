@@ -41,7 +41,7 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.6.4",
+    "@biomejs/biome": "^2.6.7",
     "@trysac/mcp-server-template": "github:Trysac/u021-mcp-server-template#v0.1.0",
     "@trysac/retry-policies": "github:Trysac/u143-retry-policies#v0.1.0",
     "@types/node": "^26.6.6",
