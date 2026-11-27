@@ -1,7 +1,5 @@
 # crdt-json
 
-[![npm version](https://img.shields.io/npm/v/@trysac/crdt-json.svg)](https://www.npmjs.com/package/@trysac/crdt-json)
-
 Conflict-free replicated JSON document library with maps, RGA sequences, PN-counters, and compact binary encoding.
 
 ## Problem
@@ -14,9 +12,15 @@ Unlike heavier alternatives like Automerge or Yjs that introduce large WASM bund
 
 ## Install
 
+Not published to npm yet. Build it from a clone, then install it from the local path:
+
 ```sh
-npm install @trysac/crdt-json
+git clone https://github.com/Trysac/u405-crdt-json.git
+cd u405-crdt-json && npm ci && npm run build
+cd ../your-project && npm install ../u405-crdt-json
 ```
+
+Imports keep the package name: `import { ... } from "@trysac/crdt-json"`.
 
 ## Usage
 
